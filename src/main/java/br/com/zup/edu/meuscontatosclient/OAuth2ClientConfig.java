@@ -6,7 +6,7 @@ import org.springframework.security.oauth2.client.*;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 @Configuration
-public class OAuthClientConfig {
+public class OAuth2ClientConfig {
 
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,

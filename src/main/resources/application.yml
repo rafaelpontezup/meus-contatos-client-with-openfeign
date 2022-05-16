@@ -1,0 +1,29 @@
+server:
+    port: 8081
+    servlet:
+        context-path: /meus-contatos-microservice
+
+spring:
+    output:
+        ansi:
+            enabled: ALWAYS
+    security:
+        oauth2:
+            client:
+                provider:
+                    meus-contatos:
+                        token-uri: http://localhost:18080/auth/realms/meus-contatos/protocol/openid-connect/token
+                registration:
+                    meus-contatos:
+                        authorization-grant-type: client_credentials
+                        client-id: meus-contatos-microservice
+                        client-secret: kMt0xOywlXUA8BgJdHqn3ilmCWqv9CN1
+                        scope: contatos:read,contatos:write
+
+feign:
+    client:
+        config:
+            meusContatosClient:
+                loggerLevel: full
+
+logging.level.br.com.zup.edu.meuscontatosclient.client.MeusContatosClient: DEBUG

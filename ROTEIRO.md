@@ -116,12 +116,20 @@ spring:
                         authorization-grant-type: client_credentials
                         client-id: meus-contatos-microservice
                         client-secret: kMt0xOywlXUA8BgJdHqn3ilmCWqv9CN1
-                        scope: contatos:read,contatos:write
+                        scope: contatos:read
 ```
-13. Configura novo **Client** no Keycloak: `meus-contatos-microservice`;
-14. Cria interceptor do OpenFeign: `OAuth2FeignRequestInterceptor`;
-15. Cria factory do interceptor: `OAuth2FeignConfiguration`;
-16. Configura um `OAuth2AuthorizedClientManager` (exemplo de codigo na [doc do Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/client/core.html#oauth2Client-authorized-manager-provider)):
+13. Configurando o Authorization Server: nosso Keycloak
+14. No Keycloak:
+    1. cria **client** `meus-contatos-microservice`;
+       1. access type: `Confidential`;
+       2. Standard Flow Enabled: `OFF`;
+       3. Direct Access Grants Enabled: `OFF`;
+       4. Service Accounts Enabled: `ON`;
+    2. adiciona scope `contatos:read` ao client;
+15. Voltando para aplicação...
+16. Cria interceptor do OpenFeign: `OAuth2FeignRequestInterceptor`;
+17. Cria factory do interceptor: `OAuth2FeignConfiguration`;
+18. Configura um `OAuth2AuthorizedClientManager` (exemplo de codigo na [doc do Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/client/core.html#oauth2Client-authorized-manager-provider)):
 ```java
    @Bean
    public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,

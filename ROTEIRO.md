@@ -5,20 +5,42 @@
 1. Crie projeto no Spring Initialzer
    1. Web (`spring-boot-starter-web`)
    2. OpenFeign (`spring-cloud-starter-openfeign`)
+   3. Bean Validation (opcional)
+   4. Spring Security OAuth2 Client (`spring-boot-starter-oauth2-client`);
 2. Import no IntelliJ;
-3. Implemente classe `StartupRunner` e explica como ela funciona
+3. Objetivo: criar API REST para exibir **todos os contatos por empresa**;
+4. Implemente classe `ListaContatosDaEmpresaController`:
 ```java
-@Component
-public class StartupRunner implements ApplicationRunner {
+@RestController
+public class ListaContatosDaEmpresaController {
+
+   @GetMapping("/api/contatos-por-empresa")
+   public ResponseEntity<?> lista(@RequestParam String empresa) {
+
+      List<ContatoDaEmpresaResponse> contatosDaEmpresa = // busca contatos e filtra por empresa 
+
+      return ResponseEntity
+              .ok(contatosDaEmpresa);
+   }
+
+}
+```
+4. Starta aplicação e faz testes na API. **Ve ela falhar por causa do Spring Security**;
+5. Explica que não precisamos proteger essa API REST no nosso contexto, mas que em outros contextos pode fazer sentido;
+6. Desabilita regras de acesso do Spring Security:
+```java
+@Configuration
+public class ClientSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        // lista todos os contatos
+    protected void configure(HttpSecurity http) throws Exception {
+        // faz nada
     }
 }
 ```
-4. Habilita OpenFeign no projeto via `@EnableFeignClients`
-5. Implementa HTTP client do OpenFeign para **Cadastrar novo contato**:
+7. Agora, vamos implementar o client...
+8. Habilita OpenFeign no projeto via `@EnableFeignClients`
+9. Implementa HTTP client do OpenFeign para **Cadastrar novo contato**:
 ```java
 @FeignClient(
     name = "meusContatosClient",
@@ -42,22 +64,25 @@ public class ContatoResponse {
 }
 ```
 
-6. Implementa cadastro de contato no `StartupRunner`:
+6. Injeta e utiliza `MeusContatosClient` no controller:
 ```java
-@Component
-public class StartupRunner implements ApplicationRunner {
+@RestController
+public class ListaContatosDaEmpresaController {
 
-    @Autowired
-    private MeusContatosClient client;
+   @Autowired
+   private MeusContatosClient client;
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
+   @GetMapping("/api/contatos-por-empresa")
+   public ResponseEntity<?> lista(@RequestParam String empresa) {
 
-       // lista todos os contatos
-       List<ContatoResponse> contatos = client.lista();
-       contatos.forEach(System.out::println);
+      List<ContatoDaEmpresaResponse> contatosDaEmpresa = client.lista().stream()
+                                .filter(contato -> empresa.equalsIgnoreCase(contato.getEmpresa()))
+                                .map(ContatoDaEmpresaResponse::new)
+                                .collect(toList());
 
-    }
+      return ResponseEntity
+              .ok(contatosDaEmpresa);
+   }
 }
 ```
 9. Executa aplicação e lê erro de **HTTP Status Code 401**;
@@ -71,14 +96,8 @@ feign:
 
 logging.level.br.com.zup.edu.meuscontatosclient.client.MeusContatosClient: DEBUG
 ```
-12. Adiciona dependência do `spring-security-oauth2-client`:
-```xml
-<dependency>
-   <groupId>org.springframework.security</groupId>
-   <artifactId>spring-boot-starter-oauth2-client</artifactId>
-</dependency>
-```
-11. Configura `application.yml` (copia e ajusta da [doc do Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/client/authorization-grants.html#_initiating_the_authorization_request)):
+
+11. Configura `application.yml` (copia e ajusta da [doc do Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/client/authorization-grants.html#_using_the_access_token)):
 ```yml
 spring:
     security:
@@ -99,12 +118,6 @@ spring:
 15. Cria factory do interceptor: `OAuth2FeignConfiguration`;
 16. Configura um `OAuth2AuthorizedClientManager` (exemplo de codigo na [doc do Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/client/core.html#oauth2Client-authorized-manager-provider)):
 ```java
-@Configuration
-public class OAuth2ClientConfig {
-
-   /**
-    * https://docs.spring.io/spring-security/reference/servlet/oauth2/client/core.html#oauth2Client-authorized-manager-provider
-    */
    @Bean
    public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository,
                                                                 OAuth2AuthorizedClientService authorizedClientService) {
@@ -120,6 +133,8 @@ public class OAuth2ClientConfig {
 
       return authorizedClientManager;
    }
-}
 ```
 16. Restarta a aplicação novamente;
+17. Invoca endpoint e vê funcionar. 
+18. Faz testes com empresas diferentes;
+19. Finaliza;

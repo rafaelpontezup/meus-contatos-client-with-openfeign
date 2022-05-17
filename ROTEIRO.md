@@ -2,15 +2,19 @@
 
 ## Implementando HTTP Client com OpenFeign
 
-1. Crie projeto no Spring Initialzer
+1. Objetivo:
+   1. Criar um microservice para consumir API de Meus Contatos;
+   2. Deve filtrar os contatos **por empresa**;
+   3. Microservice deve expor uma API REST;
+   4. Demonstrar listagem de contatos no Insomnia;
+2. Crie projeto no Spring Initialzer
    1. Web (`spring-boot-starter-web`)
    2. OpenFeign (`spring-cloud-starter-openfeign`)
    3. Bean Validation (opcional)
    4. Spring Security OAuth2 Client (`spring-boot-starter-oauth2-client`);
-2. Import no IntelliJ;
-3. Objetivo: criar API REST para exibir **todos os contatos por empresa**;
-4. Desenha API no Insominia;
-5. Implemente classe `ListaContatosDaEmpresaController`:
+3. Import no IntelliJ;
+5. Desenha API no Insominia;
+6. Implemente classe `ListaContatosDaEmpresaController`:
 ```java
 @RestController
 public class ListaContatosDaEmpresaController {

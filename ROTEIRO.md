@@ -9,7 +9,8 @@
    4. Spring Security OAuth2 Client (`spring-boot-starter-oauth2-client`);
 2. Import no IntelliJ;
 3. Objetivo: criar API REST para exibir **todos os contatos por empresa**;
-4. Implemente classe `ListaContatosDaEmpresaController`:
+4. Desenha API no Insominia;
+5. Implemente classe `ListaContatosDaEmpresaController`:
 ```java
 @RestController
 public class ListaContatosDaEmpresaController {
